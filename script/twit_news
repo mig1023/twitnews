@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use lib 'lib';
+use lib '/home/mig29/twit_news/lib/';
+
+# Start command line interface for application
+require Mojolicious::Commands;
+Mojolicious::Commands->start_app('TwitNews');

@@ -1,0 +1,79 @@
+
+html {
+height: 100%; 
+}
+
+body {
+margin: 0px;
+}
+
+a {
+text-decoration: none;
+}
+a:hover {
+text-decoration: underline;
+}
+
+.right_pnl {
+position: fixed; 
+height: 100%;
+background: #00BFFF;
+padding:10px 10px 10px 15px;
+margin-left:100%;
+width: 340px;
+left:-340px;
+}
+
+.left_pnl {
+position: fixed; 
+height: 100%;
+background: #00BFFF;
+padding:10px 10px 10px 10px;
+width: 340px;
+left: 0px;
+}
+
+.reg_pnl {
+position: fixed; 
+height: 100%;
+padding:10px 10px 10px 10px;
+left: 370px;
+}
+
+.stand_fond {
+font-family: sans-serif;
+font-weight: 100;
+}
+
+.head_font {
+font-family: Impact, fantasy;
+font-size: 28px;
+}
+
+.news_font {
+font-family: Impact, fantasy;
+font-size: 15px;
+}
+
+.sub_font {
+font-family: sans-serif;
+font-size: 10px;
+font-weight: 100;
+}
+
+.news_pnl {
+padding:20px 340px 20px 8%;
+line-height: 1em;
+}
+
+.simple_text {
+left: 50%;
+top: 50%; 
+position: fixed;
+margin-left: -300px;
+margin-top: -20px; 
+width: 600px;
+height: 40px;
+background: white;
+text-align: center;
+}

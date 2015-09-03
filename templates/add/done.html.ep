@@ -1,0 +1,5 @@
+% layout 'default';
+% title 'TwitNews';
+<div class=simple_text><%= $t_xt %>
+<a href="<%= $l_nk %>">вернуться</a>
+</div>

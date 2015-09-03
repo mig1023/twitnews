@@ -1,0 +1,46 @@
+% layout 'default';
+% title 'TwitNews';
+<div class = right_pnl>
+
+% if (!$login) {
+	<font class = stand_fond>
+	Twitter News - совместный новостной блог, в котором любой 
+	человек может размещать краткие новости со ссылкой на первоисточник. 
+	Новости могут быть снабжены иллюстрацией.<br><br>
+	Вы можете зарегистрироваться прямо сейчас. Для чтения новостей регистрироваться
+	не нужно.<br><br>
+	<form style = "display: inline;" action="/login" method = "post">
+		ваш логин<br>
+		<input type = "text" size = "32" name = "login">
+		<br><br>
+		ваш пароль<br></font>
+		<input type = "password" size = "32" name = "pass">
+		<br><br>
+		<input type = "image" name = "login" src = "pic/btn_enter2.png"
+			onmouseout="this.src='pic/btn_enter2.png'"
+			onmouseover="this.src='pic/btn_enter.png'"></form>
+	<form  style = "display: inline;" action="/reg" method = "post">
+		<input type = "image" name = "logout" src = "pic/btn_reg2.png"
+			onmouseout="this.src='pic/btn_reg2.png'"
+			onmouseover="this.src='pic/btn_reg.png'"></form></form>
+% } else {
+	<font class = stand_fond><a href="/logout">выйти</a><br>
+	<a href='/add'>добавить новость</a></font>
+	% }
+
+<br><br>
+<font class = stand_fond>наиболее популярные теги:<br>
+<%== $tagst %>
+
+% if ($tagse ne '') {
+<br><br>отбор по тегу:
+<b><%== $tagse %></b> 
+(<a href="/tag_out">отменить</a>)
+</b>
+% }
+
+</div>
+
+<div class = news_pnl>
+<%== $newst %>
+</div>

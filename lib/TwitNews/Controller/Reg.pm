@@ -1,0 +1,75 @@
+package TwitNews::Controller::Reg;
+use Mojo::Base 'Mojolicious::Controller';
+use Digest::MD5;
+use DBI;
+use File::Copy;
+
+my $dbh;
+my $sbh;
+my $cbh;
+my $capcha = 0;
+
+sub index {
+	capcha();
+	
+	my $self = shift;
+	$self->render();
+	}
+
+sub done {
+	my $self = shift;
+	my $fail = '';
+	
+	connect_dbi();
+	
+	$cbh = $dbh->prepare("SELECT * FROM user_name WHERE user_name = '" . $self->param('login') . "';");
+	$cbh->execute or die;
+	my $hashref = $cbh->fetchrow_hashref();
+
+	$fail = 'неправильно введена капча' if $self->param('s_capcha') != $capcha;
+	$fail = 'логин уже занят' if $self->param('login') eq $hashref->{'user_name'};
+	$fail = 'неправильная каптча' if $self->param('s_capcha') != $capcha;
+	$fail = 'пароли не совпадают' if $self->param('password1') ne $self->param('password2');
+	$fail = 'неправильный email' if !($self->param('email') =~ /.+@.+\..+/i);
+	$fail = 'не введена капча' if $self->param('s_capcha') eq '';
+	$fail = 'не задан email' if $self->param('email') eq '';
+	$fail = 'не повторён пароль' if $self->param('password2') eq '';
+	$fail = 'не задан пароль' if $self->param('password1') eq '';
+	$fail = 'не задан логин' if $self->param('login') eq '';
+	
+	if ($fail ne '') { 	$self->render(t_xt => "ошибка: $fail! ", l_nk => '/reg' );
+				$dbh->disconnect(); }
+	
+		else  	 {	$::login = $self->param('login');
+				$dbh->do("INSERT INTO user_name VALUES ('0','" .
+					$self->param('login') . "','" .
+					md5_str( $self->param('password1')) . "','" . 
+					$self->param('email') . "')" );
+				$dbh->disconnect();
+				
+				$self->render(t_xt => 'регистрация прошла успешно!', l_nk => '/');
+				}
+		}
+	
+sub md5_str {
+	my $md5 = Digest::MD5->new->add(shift);
+	$md5->hexdigest;
+	}
+
+sub capcha {
+	my @symbol = ('A','B','C','D','E','F');
+	$capcha = 0;
+	for (0..5) {
+		my $number = int(rand(11))+1;
+		if (int(rand(2)) == 1) 	{ $number = 'A' . $number;
+					  $capcha++; }
+			else		{ $number = 'B' . $number; }
+		copy( 'twit_news/public/capcha/'.$number.'.jpg' , 'twit_news/public/capcha/'.$symbol[$_].'.jpg');
+		}; 
+	}
+
+sub connect_dbi {
+	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", "login", "password") or die;
+	}
+
+1;

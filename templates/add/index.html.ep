@@ -1,0 +1,36 @@
+% layout 'default';
+% title 'TwitNews';
+
+<div class = left_pnl>
+<font class = stand_fond>
+Twitter News - совместный новостной блог, в котором любой человек может размещать краткие новости со ссылкой на первоисточник. Новости могут быть снабжены иллюстрацией.<br><br>
+Для регистрации необходимо заполнить все поял формы.<br><br>
+В Twitter News запрещено:<br><br>
+- размещать материалы, запрещённые законами РФ, или ссылки на материалы, запрещённые законами РФ;<br><br>
+- новости экстремистского характера;<br><br>
+- материалы либо ссылки на материалы порнографического характера.<br><br>
+Администрация Twitter News оставляет за собой право удалять новости без предварительного уведомления. 
+</font>
+</div>
+
+<div class = reg_pnl>
+<form action="/add_done" method = "post">
+	<font class = stand_fond>
+	заголовок (max 100)<br>
+	<input type = "text" size = "52" name = "head">
+	<br><br>
+	текст новости (max 1000)<br>
+	<textarea rows = "10" cols = "60" name = "textnews"></textarea>
+	<br><br>
+	первоисточник (http://...)<br>
+	<input type = "text" size = "52" name = "proof">
+	<br><br>
+	перечислите теги через запятую<br>
+	<input type = "text" size = "52" name = "tags"><br>
+	<font class = sub_font>наиболее популярные тёги:</font>
+	<br><br>
+	<input type = "submit" value = "разместить новость!"><br><br>
+	<a href = "/">вернуться назад</a>
+	</font>
+</form>
+</div>

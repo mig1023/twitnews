@@ -1,0 +1,38 @@
+% layout 'default';
+% title 'TwitNews';
+
+<div class = left_pnl>
+<font class = stand_fond>
+Twitter News - совместный новостной блог, в котором любой человек может размещать краткие новости со ссылкой на первоисточник. Новости могут быть снабжены иллюстрацией.<br><br>
+Для регистрации необходимо заполнить все поял формы.<br><br>
+В Twitter News запрещено:<br><br>
+- размещать материалы, запрещённые законами РФ, или ссылки на материалы, запрещённые законами РФ;<br><br>
+- новости экстремистского характера;<br><br>
+- материалы либо ссылки на материалы порнографического характера.<br><br>
+Администрация Twitter News оставляет за собой право удалять новости без предварительного уведомления. 
+</font>
+</div>
+
+<div class = reg_pnl>
+<form action="/reg_done" method = "post">
+	<font class = stand_fond>
+	ваш логин<br>
+	<input type = "text" size = "22" name = "login">
+	<br><br>
+	ваш пароль<br>
+	<input type="password" size = "22" name = "password1"><br><br>
+	введите повторно<br>
+	<input type="password" size = "22" name = "password2"><br><br>
+	ваш e-mail для связи<br>
+	<input type = "text" size = "22" name = "email">
+	<br><br>
+	<img src="capcha/A.jpg"> <img src="capcha/B.jpg"> <img src="capcha/C.jpg"><br>
+	<img src="capcha/D.jpg"> <img src="capcha/E.jpg"> <img src="capcha/F.jpg"><br><br>
+	количество птичек на картинках (0-6)<br>
+	<input type = "text" size = "22" name = "s_capcha">
+	<br><br>
+	<input type = "submit" value = "зарегистрироваться!"><br><br>
+	<a href = "/">вернуться назад</a>
+	</font>
+</form>
+</div>
