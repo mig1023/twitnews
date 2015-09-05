@@ -5,11 +5,13 @@ use DBI;
 my $dbh;
 my $sbh;
 
+## форма добавления новости
 sub index {
 	my $self = shift;
 	$self->render();
 	}
 
+## само добавление
 sub done {
 	my $self = shift;
 	my $fail = '';
@@ -35,6 +37,7 @@ sub done {
 				}
 		}
 
+## подключение к БД
 sub connect_dbi {
 	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", "login", "password") or die;
 	}

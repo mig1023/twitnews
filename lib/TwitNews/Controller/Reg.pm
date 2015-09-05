@@ -9,6 +9,7 @@ my $sbh;
 my $cbh;
 my $capcha = 0;
 
+## форма регистрации
 sub index {
 	capcha();
 	
@@ -16,6 +17,7 @@ sub index {
 	$self->render();
 	}
 
+## сама регистрация
 sub done {
 	my $self = shift;
 	my $fail = '';
@@ -50,12 +52,14 @@ sub done {
 				$self->render(t_xt => 'регистрация прошла успешно!', l_nk => '/');
 				}
 		}
-	
+
+## расчёт md5 строки	
 sub md5_str {
 	my $md5 = Digest::MD5->new->add(shift);
 	$md5->hexdigest;
 	}
 
+## капча (6 случайных картинок)
 sub capcha {
 	my @symbol = ('A','B','C','D','E','F');
 	$capcha = 0;
@@ -68,6 +72,7 @@ sub capcha {
 		}; 
 	}
 
+## подключение к БД
 sub connect_dbi {
 	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", "login", "password") or die;
 	}

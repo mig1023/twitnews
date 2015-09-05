@@ -10,6 +10,7 @@ my $cbh;
 my $tag_search = '';
 my $comment_id = 0;
 
+## главная страница
 sub index {
 	my $self = shift;
 	my $news = '';
@@ -21,6 +22,7 @@ sub index {
 	
 	connect_dbi();
 	
+	## вывод тегов
 	$cbh = $dbh->prepare("SELECT * FROM news;");
 	$cbh->execute or die;
 	while($tagsref = $cbh->fetchrow_hashref()) {
@@ -30,9 +32,12 @@ sub index {
 			s/(^\s+|\s+$)//;
 			$tags{$_}++;
 		};};
+	
+	## вывод текущего
 	for ((sort {$tags{$b} <=> $tags{$a} } keys %tags))
 		{ $tags .= '<a href="tag/' . $_ . '">' . $_ . '</a>, ' if defined($tags{$_}) };
-		
+	
+	## вывод новостей (всех или по тегу)
 	$sbh = $dbh->prepare("SELECT * FROM news order by data desc;");
 	$sbh->execute or die;
 	
@@ -64,6 +69,7 @@ sub index {
 			tagse => $tag_search );
 	}
 
+## залогинивание
 sub login {
 	my $self = shift;
 	
@@ -81,12 +87,14 @@ sub login {
 		$self->render(); };
 	}
 
+## разлогинивание
 sub logout {
 	my $self = shift;
 	$::login = 0;
 	$self->redirect_to('/');
 	}
 
+## отдельная новость с комментариями
 sub comm {
 	my $self = shift;
 	$comment_id = $self->stash('id');
@@ -126,6 +134,7 @@ sub comm {
 	$self->render( login => $::login, newst => $news, commt => $comm );
 	}
 
+## добавление нового комментария
 sub newcomm {
 	my $self = shift;
 	
@@ -141,23 +150,27 @@ sub newcomm {
 	$self->render(t_xt => 'комментарий сохранён!', l_nk => '/');
 	}
 
+## отбор новостей по тегу
 sub tag {
 	my $self = shift;
 	$tag_search = $self->stash('tag');
 	$self->redirect_to('/');
 	}
 
+## возврат ко всем новостям
 sub tag_out {
 	my $self = shift;
 	$tag_search = '';
 	$self->redirect_to('/');
 	}
 
+## расчёт md5 для строки
 sub md5_str {
 	my $md5 = Digest::MD5->new->add(shift);
 	$md5->hexdigest;
 	}
 
+## читабельный формат даты
 sub timeformat {
 	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(shift);
 	$year += 1900;
@@ -165,6 +178,7 @@ sub timeformat {
 	$str;
 	}
 
+## подключение к БД
 sub connect_dbi {
 	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", "login", "password") or die;
 	}
