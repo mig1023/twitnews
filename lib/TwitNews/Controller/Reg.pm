@@ -74,7 +74,7 @@ sub capcha {
 
 ## подключение к БД
 sub connect_dbi {
-	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", "login", "password") or die;
+	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", "root", "password") or die;
 	}
 
 1;

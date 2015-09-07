@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 'lib';
-use lib '/home/mig29/twit_news/lib/';
+use lib '/home/mig29/TwitNews/lib/';
 
 # Start command line interface for application
 require Mojolicious::Commands;
