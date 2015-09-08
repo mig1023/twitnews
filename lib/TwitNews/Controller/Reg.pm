@@ -3,6 +3,7 @@ use Mojo::Base 'Mojolicious::Controller';
 use Digest::MD5;
 use DBI;
 use File::Copy;
+use DB_connect_info;
 
 my $dbh;
 my $sbh;
@@ -74,7 +75,7 @@ sub capcha {
 
 ## подключение к БД
 sub connect_dbi {
-	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", "root", "password") or die;
+	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", &db_login, &db_pwd) or die;
 	}
 
 1;

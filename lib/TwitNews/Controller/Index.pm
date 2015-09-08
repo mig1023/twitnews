@@ -2,6 +2,7 @@ package TwitNews::Controller::Index;
 use Mojo::Base 'Mojolicious::Controller';
 use Digest::MD5;
 use DBI;
+use DB_connect_info;
 use Encode qw(decode encode);
 
 my $dbh;
@@ -110,15 +111,15 @@ sub comm {
 	my $hashref = $sbh->fetchrow_hashref();
 	
 	$news .= '<font class = head_font>' .
-	decode('utf8', $hashref->{'head'}) . 
-	'</font><br><font class = news_font>' .
-	decode('utf8', $hashref->{'news'}) . 
-	'</font><br><font class = sub_font>' .
-	decode('utf8', $hashref->{'user_name'}) . ' | ' .
-	timeformat($hashref->{'data'}) .
-	' | <a href="' . decode('utf8', $hashref->{'link'}) . '">' .
-	decode('utf8', $hashref->{'link'}) .
-	'</a></font>' . '<br>'x3;
+		decode('utf8', $hashref->{'head'}) . 
+		'</font><br><font class = news_font>' .
+		decode('utf8', $hashref->{'news'}) . 
+		'</font><br><font class = sub_font>' .
+		decode('utf8', $hashref->{'user_name'}) . ' | ' .
+		timeformat($hashref->{'data'}) .
+		' | <a href="' . decode('utf8', $hashref->{'link'}) . '">' .
+		decode('utf8', $hashref->{'link'}) .
+		'</a></font>' . '<br>'x3;
 	
 	$cbh = $dbh->prepare("SELECT * FROM comment WHERE news_num = " . $comment_id . " order by data;");
 	$cbh->execute or die "\nerror query!";
@@ -180,7 +181,7 @@ sub timeformat {
 
 ## подключение к БД
 sub connect_dbi {
-	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", "root", "password") or die;
+	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", &db_login, &db_pwd) or die;
 	}
 
 1;
