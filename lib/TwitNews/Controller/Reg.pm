@@ -67,6 +67,7 @@ sub capcha {
 	my $path = (File::Spec->splitpath( __FILE__ ))[1];
 	$path =~ s/\/lib\/.*/\//gi;
 	$capcha = 0;
+	
 	for (0..5) { 
 		my $number = int(rand(11))+1;
 		if (int(rand(2)) == 1) 	{ $number = 'A' . $number;

@@ -50,16 +50,14 @@ sub index {
 		$comm_num++ while $commref = $cbh->fetchrow_hashref();
 
 		if ( ( $tag_search eq '' ) or ( decode('utf8',$hashref->{'tags'}) =~ /$tag_search/ ) ) {
-			$news .= '<font class = head_font>' .
-			decode('utf8', $hashref->{'head'}) . 
-			'</font><br><font class = news_font>' .
-			decode('utf8', $hashref->{'news'}) . 
-			'</font><br><font class = sub_font>' .
-			decode('utf8', $hashref->{'user_name'}) . ' | ' .
-			timeformat($hashref->{'data'}) .
-			' | <a href="news/' . $hashref->{'num'} . '/">' . $comm_num . ' коммент.</a> | ' .
-			'<a href="' . decode('utf8', $hashref->{'link'}) . '">' .
-			decode('utf8', $hashref->{'link'}) .
+			$news .= '<font class = head_font>' .	decode('utf8', $hashref->{'head'}) . 
+			'</font><br><font class = news_font>' .	decode('utf8', $hashref->{'news'}) . 
+			'</font><br><font class = sub_font>' .	decode('utf8', $hashref->{'user_name'}) .
+			' | ' .					timeformat($hashref->{'data'}) .
+			' | <a href="news/' . 			$hashref->{'num'} .
+			'/">' . 				$comm_num .
+			' коммент.</a> | <a href="' . 		decode('utf8', $hashref->{'link'}) .
+			'">' .					decode('utf8', $hashref->{'link'}) .
 			'</a></font>' . '<br>'x3; }
 			}
 	
@@ -80,6 +78,8 @@ sub login {
 	$sbh->execute or die;
 	my $hashref = $sbh->fetchrow_hashref();
 	$dbh->disconnect();
+	
+	## проверка пароля
 	if ( $hashref->{'password'} eq md5_str($self->param('pass')) ) {
 		$::login = $self->param('login');
 		$self->redirect_to('/'); }
@@ -92,6 +92,7 @@ sub login {
 sub logout {
 	my $self = shift;
 	$::login = 0;
+	
 	$self->redirect_to('/');
 	}
 
@@ -105,30 +106,27 @@ sub comm {
 	
 	connect_dbi();
 	
+	## сама новость
 	$sbh = $dbh->prepare("SELECT * FROM news WHERE num = " . $comment_id . ";");
 	$sbh->execute or die;
 	
 	my $hashref = $sbh->fetchrow_hashref();
 	
-	$news .= '<font class = head_font>' .
-		decode('utf8', $hashref->{'head'}) . 
-		'</font><br><font class = news_font>' .
-		decode('utf8', $hashref->{'news'}) . 
-		'</font><br><font class = sub_font>' .
-		decode('utf8', $hashref->{'user_name'}) . ' | ' .
-		timeformat($hashref->{'data'}) .
-		' | <a href="' . decode('utf8', $hashref->{'link'}) . '">' .
-		decode('utf8', $hashref->{'link'}) .
+	$news .= '<font class = head_font>' .		decode('utf8', $hashref->{'head'}) . 
+		'</font><br><font class = news_font>' .	decode('utf8', $hashref->{'news'}) . 
+		'</font><br><font class = sub_font>' .	decode('utf8', $hashref->{'user_name'}) .
+		' | ' .					timeformat($hashref->{'data'}) .
+		' | <a href="' . 			decode('utf8', $hashref->{'link'}) . 
+		'">' .					decode('utf8', $hashref->{'link'}) .
 		'</a></font>' . '<br>'x3;
 	
+	## комментарии 
 	$cbh = $dbh->prepare("SELECT * FROM comment WHERE news_num = " . $comment_id . " order by data;");
 	$cbh->execute or die "\nerror query!";
 	while($commref = $cbh->fetchrow_hashref()) { 
-		$comm .= '<font class = news_font>' .
-		decode('utf8', $commref->{'comment'}) . 
-		'</font><br><font class = sub_font>' .
-		decode('utf8', $commref->{'user_name'}) . ' | ' .
-		timeformat($commref->{'data'}) .
+		$comm .= '<font class = news_font>' .	decode('utf8', $commref->{'comment'}) . 
+		'</font><br><font class = sub_font>' . 	decode('utf8', $commref->{'user_name'}) . 
+		' | ' .					timeformat($commref->{'data'}) .
 		'</font>' . '<br>'x2; };
 	
 	$dbh->disconnect();
