@@ -9,7 +9,7 @@ my $sbh;
 ## форма добавления новости
 sub index {
 	my $self = shift;
-	$self->render();
+	$self->render() unless $::login == 0;
 	}
 
 ## само добавление

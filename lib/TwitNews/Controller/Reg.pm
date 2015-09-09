@@ -3,6 +3,7 @@ use Mojo::Base 'Mojolicious::Controller';
 use Digest::MD5;
 use DBI;
 use File::Copy;
+use File::Spec;
 use DB_connect_info;
 
 my $dbh;
@@ -63,13 +64,15 @@ sub md5_str {
 ## капча (6 случайных картинок)
 sub capcha {
 	my @symbol = ('A','B','C','D','E','F');
+	my $path = (File::Spec->splitpath( __FILE__ ))[1];
+	$path =~ s/\/lib\/.*/\//gi;
 	$capcha = 0;
-	for (0..5) {
+	for (0..5) { 
 		my $number = int(rand(11))+1;
 		if (int(rand(2)) == 1) 	{ $number = 'A' . $number;
 					  $capcha++; }
 			else		{ $number = 'B' . $number; }
-		copy( 'twit_news/public/capcha/'.$number.'.jpg' , 'twit_news/public/capcha/'.$symbol[$_].'.jpg');
+		copy( $path.'public/capcha/'.$number.'.jpg' , $path.'public/capcha/'.$symbol[$_].'.jpg');
 		}; 
 	}
 
