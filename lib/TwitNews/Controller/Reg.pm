@@ -30,6 +30,7 @@ sub done {
 	$cbh->execute or die;
 	my $hashref = $cbh->fetchrow_hashref();
 
+	# проверка неправильного заполнения регистрационной формы
 	$fail = 'неправильно введена капча' if $self->param('s_capcha') != $capcha;
 	$fail = 'логин уже занят' if $self->param('login') eq $hashref->{'user_name'};
 	$fail = 'неправильная каптча' if $self->param('s_capcha') != $capcha;

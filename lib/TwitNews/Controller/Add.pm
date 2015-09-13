@@ -17,6 +17,7 @@ sub done {
 	my $self = shift;
 	my $fail = '';
 	
+	# проверка превышения допустимых размеров новости и отсутствия пруфа
 	$fail = 'слишком длинный заголовок' if length($self->param('head')) > 100;
 	$fail = 'слишком длинная новость' if length($self->param('textnews')) > 1000;
 	$fail = 'неправильная ссылка на первоисточник'
@@ -24,7 +25,7 @@ sub done {
 	
 	if ($fail ne '') { 	$self->render(t_xt => "ошибка: $fail!", l_nk => '/add' ); }
 	
-		else  	 {	connect_dbi();
+		else  	 {	connect_dbi(); 
 				$dbh->do( "INSERT INTO news VALUES ('0','" .
 					$::login . "','" .
 					$self->param('head') . "','" . 
