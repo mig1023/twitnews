@@ -14,6 +14,9 @@ sub startup {
   ## главная
   $r->any('/')->to('index#index');
 
+  ## последующие страницы
+  $r->any('/p/:page')->to('index#index');
+
   ## вход в личный кабинет
   $r->any('/login')->to('index#login');
   

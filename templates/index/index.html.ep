@@ -1,4 +1,8 @@
+% if ($num_p > 0) {
+% layout 'comm_def';
+% } else {
 % layout 'default';
+% }
 % title 'TwitNews';
 <div class = right_pnl>
 
@@ -43,4 +47,11 @@
 
 <div class = news_pnl>
 <%== $newst %>
+<br><br>
+% if ($num_p > 1) {
+<a href="/p/<%== $num_p-1 %>">назад</a> - 
+% } elsif ($num_p == 1) {
+<a href="/">назад</a> - 
+% }
+<a href="/p/<%== $num_p+1 %>">вперёд</a>
 </div>

@@ -13,6 +13,8 @@ my $comment_id = 0;
 ## главная страница
 sub index {
 	my $self = shift;
+	my $page_num = $self->stash('page');
+	
 	my $news = '';
 	my $hashref;
 	my $tagsref;
@@ -22,7 +24,7 @@ sub index {
 	
 	connect_dbi();
 	
-	## вывод тегов
+	## сортировка и вывод тегов
 	$cbh = $dbh->prepare("SELECT * FROM news;");
 	$cbh->execute or die;
 	while($tagsref = $cbh->fetchrow_hashref()) {
@@ -31,25 +33,33 @@ sub index {
 			$_ = decode('utf8',$_);
 			s/(^\s+|\s+$)//;
 			$tags{$_}++;
-		};};
+			};
+		};
 	
-	## вывод текущего
 	for ((sort {$tags{$b} <=> $tags{$a} } keys %tags))
 		{ $tags .= '<a href="tag/' . $_ . '">' . $_ . '</a>, ' if defined($tags{$_}) };
 	
 	## вывод новостей (всех или по тегу)
-	$sbh = $dbh->prepare("SELECT * FROM news order by data desc;");
+	
+	if ( $tag_search eq '' )
+		{ $sbh = $dbh->prepare("SELECT * FROM news order by data desc;"); }
+	else	{ $sbh = $dbh->prepare("SELECT * FROM news WHERE tags like '" . $tag_search . "'order by data desc;"); }
+	
 	$sbh->execute or die;
 	
-	while($hashref = $sbh->fetchrow_hashref()) {
+	if ($page_num > 0) {
+		$hashref = $sbh->fetchrow_hashref() for ( 1 .. ($page_num*10) ) };
+	
+	my $counter = 0;
+	
+	while (($hashref = $sbh->fetchrow_hashref()) && ($counter < 10)) {
 		my $comm_num = 0;
 	
 		$cbh = $dbh->prepare("SELECT * FROM comment WHERE news_num = " . $hashref->{'num'} . ";");
 		$cbh->execute or die;
 		$comm_num++ while $commref = $cbh->fetchrow_hashref();
 
-		if ( ( $tag_search eq '' ) or ( decode('utf8',$hashref->{'tags'}) =~ /$tag_search/ ) ) {
-			$news .= '<font class = head_font>' .	decode('utf8', $hashref->{'head'}) . 
+		$news .='<font class = head_font>' .		decode('utf8', $hashref->{'head'}) . 
 			'</font><br><font class = news_font>' .	decode('utf8', $hashref->{'news'}) . 
 			'</font><br><font class = sub_font>' .	decode('utf8', $hashref->{'user_name'}) .
 			' | ' .					timeformat($hashref->{'data'}) .
@@ -57,15 +67,18 @@ sub index {
 			'/">' . 				$comm_num .
 			' коммент.</a> | <a href="' . 		decode('utf8', $hashref->{'link'}) .
 			'">' .					decode('utf8', $hashref->{'link'}) .
-			'</a></font>' . '<br>'x3; }
-			}
+			'</a></font>' . '<br>'x3;
+			
+		$counter++;
+		}
 	
 	$sbh->finish();
 	$dbh->disconnect();
 	$self->render(  login => $::login,
 			newst => $news,
 			tagst => $tags,
-			tagse => $tag_search );
+			tagse => $tag_search,
+			num_p => $page_num );
 	}
 
 ## залогинивание
