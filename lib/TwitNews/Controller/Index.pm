@@ -2,7 +2,6 @@ package TwitNews::Controller::Index;
 use Mojo::Base 'Mojolicious::Controller';
 use Digest::MD5;
 use DBI;
-use DB_connect_info;
 use Encode qw(decode encode);
 
 my $dbh;
@@ -61,6 +60,7 @@ sub index {
 			'</a></font>' . '<br>'x3; }
 			}
 	
+	$sbh->finish();
 	$dbh->disconnect();
 	$self->render(  login => $::login,
 			newst => $news,
@@ -77,6 +77,7 @@ sub login {
 	$sbh = $dbh->prepare("SELECT * FROM user_name WHERE user_name = '" . $self->param('login') . "';");
 	$sbh->execute or die;
 	my $hashref = $sbh->fetchrow_hashref();
+	$sbh->finish();
 	$dbh->disconnect();
 	
 	## проверка пароля
@@ -129,6 +130,7 @@ sub comm {
 		' | ' .					timeformat($commref->{'data'}) .
 		'</font>' . '<br>'x2; };
 	
+	$sbh->finish();
 	$dbh->disconnect();
 	$self->render( login => $::login, newst => $news, commt => $comm );
 	}
@@ -144,6 +146,7 @@ sub newcomm {
 		$::login . "','" . 
 		$self->param('textcomm') . "','" . 
 		time . "')" );
+
 	$dbh->disconnect();
 	
 	$self->render(t_xt => 'комментарий сохранён!', l_nk => '/');
@@ -179,7 +182,7 @@ sub timeformat {
 
 ## подключение к БД
 sub connect_dbi {
-	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", &db_login, &db_pwd) or die;
+	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", $TwitNews::dblog, $TwitNews::dbpwd) or die;
 	}
 
 1;

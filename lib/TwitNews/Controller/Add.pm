@@ -1,7 +1,6 @@
 package TwitNews::Controller::Add;
 use Mojo::Base 'Mojolicious::Controller';
 use DBI;
-use DB_connect_info;
 
 my $dbh;
 my $sbh;
@@ -33,6 +32,7 @@ sub done {
 					$self->param('proof') . "','" .
 					$self->param('tags') . "','" .
 					time . "')" );
+				
 				$dbh->disconnect();
 				
 				$self->render(t_xt => "новость успешно размещена!", l_nk => '/');
@@ -41,7 +41,7 @@ sub done {
 
 ## подключение к БД
 sub connect_dbi {
-	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", &db_login, &db_pwd) or die;
+	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", $TwitNews::dblog, $TwitNews::dbpwd) or die;
 	}
-
+	
 1;

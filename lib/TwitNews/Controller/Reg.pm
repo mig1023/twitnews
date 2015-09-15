@@ -4,7 +4,6 @@ use Digest::MD5;
 use DBI;
 use File::Copy;
 use File::Spec;
-use DB_connect_info;
 
 my $dbh;
 my $sbh;
@@ -46,10 +45,12 @@ sub done {
 				$dbh->disconnect(); }
 	
 		else  	 {	$::login = $self->param('login');
+				
 				$dbh->do("INSERT INTO user_name VALUES ('0','" .
 					$self->param('login') . "','" .
 					md5_str( $self->param('password1')) . "','" . 
 					$self->param('email') . "')" );
+				
 				$dbh->disconnect();
 				
 				$self->render(t_xt => 'регистрация прошла успешно!', l_nk => '/');
@@ -80,7 +81,7 @@ sub capcha {
 
 ## подключение к БД
 sub connect_dbi {
-	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", &db_login, &db_pwd) or die;
+	$dbh = DBI->connect("dbi:mysql:dbname=twit_news", $TwitNews::dblog, $TwitNews::dbpwd) or die;
 	}
 
 1;

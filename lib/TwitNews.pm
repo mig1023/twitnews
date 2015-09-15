@@ -1,7 +1,11 @@
 package TwitNews;
 use Mojo::Base 'Mojolicious';
 
+
 our $login = 0;
+## логин и пароль для подключения к БД
+our $dblog = "root";
+our $dbpwd = "password";
 
 sub startup {
   my $self = shift;
