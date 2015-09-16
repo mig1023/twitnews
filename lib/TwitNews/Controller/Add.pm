@@ -21,12 +21,15 @@ sub done {
 	$fail = 'слишком длинная новость' if length($self->param('textnews')) > 1000;
 	$fail = 'неправильная ссылка на первоисточник'
 		if !($self->param('proof') =~ /^(https?:\/\/)([\w\.]+)\.([a-z]{2,6}\.?)(\/[\w\.]*)*\/?$/);
+	$fail = 'только зарегистрированные пользователи могут размещать новости' if $::login == 0;;
 	
 	if ($fail ne '') { 	$self->render(t_xt => "ошибка: $fail!", l_nk => '/add' ); }
 	
 		else  	 {	connect_dbi(); 
 				my $tags_l = $self->param('tags');
+				# теги всегда маленькими буквами
 				$tags_l =~ tr/[АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]/[абвгдеёжзийклмнопрстуфхцчшщъыьэюя]/;
+				$tags_l =~ tr/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/[abcdefghijklmnopqrstuvwxyz]/;
 				$dbh->do( "INSERT INTO news VALUES ('0','" .
 					$::login . "','" .
 					$self->param('head') . "','" . 
