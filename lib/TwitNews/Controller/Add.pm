@@ -25,12 +25,14 @@ sub done {
 	if ($fail ne '') { 	$self->render(t_xt => "ошибка: $fail!", l_nk => '/add' ); }
 	
 		else  	 {	connect_dbi(); 
+				my $tags_l = $self->param('tags');
+				$tags_l =~ tr/[АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]/[абвгдеёжзийклмнопрстуфхцчшщъыьэюя]/;
 				$dbh->do( "INSERT INTO news VALUES ('0','" .
 					$::login . "','" .
 					$self->param('head') . "','" . 
 					$self->param('textnews') . "','" . 
 					$self->param('proof') . "','" .
-					$self->param('tags') . "','" .
+					$tags_l . "','" .
 					time . "')" );
 				
 				$dbh->disconnect();
