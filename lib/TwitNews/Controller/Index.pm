@@ -39,19 +39,20 @@ sub index {
 	for ((sort {$tags{$b} <=> $tags{$a} } keys %tags))
 		{ $tags .= '<a href="tag/' . $_ . '">' . $_ . '</a>, ' if defined($tags{$_}) };
 	
-	## вывод новостей (всех или по тегу)
-	
+	## вывод новостей: всех или по тегу
 	if ( $tag_search eq '' )
 		{ $sbh = $dbh->prepare("SELECT * FROM news order by data desc;"); }
 	else	{ $sbh = $dbh->prepare("SELECT * FROM news WHERE tags like '" . $tag_search . "'order by data desc;"); }
 	
 	$sbh->execute or die;
 	
+	## пропуск просмотренных
 	if ($page_num > 0) {
 		$hashref = $sbh->fetchrow_hashref() for ( 1 .. ($page_num*10) ) };
 	
 	my $counter = 0;
 	
+	## вывод по 10 новостей
 	while (($hashref = $sbh->fetchrow_hashref()) && ($counter < 10)) {
 		my $comm_num = 0;
 	
@@ -87,6 +88,7 @@ sub login {
 	
 	connect_dbi();
 	
+	## получение данных по логину
 	$sbh = $dbh->prepare("SELECT * FROM user_name WHERE user_name = '" . $self->param('login') . "';");
 	$sbh->execute or die;
 	my $hashref = $sbh->fetchrow_hashref();

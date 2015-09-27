@@ -16,7 +16,7 @@ sub done {
 	my $self = shift;
 	my $fail = '';
 	
-	# проверка превышения допустимых размеров новости и отсутствия пруфа
+	## проверка превышения допустимых размеров новости и отсутствия пруфа
 	$fail = 'слишком длинный заголовок' if length($self->param('head')) > 100;
 	$fail = 'слишком длинная новость' if length($self->param('textnews')) > 1000;
 	$fail = 'неправильная ссылка на первоисточник'
@@ -27,9 +27,12 @@ sub done {
 	
 		else  	 {	connect_dbi(); 
 				my $tags_l = $self->param('tags');
-				# теги всегда маленькими буквами
+				
+				## теги всегда маленькими буквами
 				$tags_l =~ tr/[АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]/[абвгдеёжзийклмнопрстуфхцчшщъыьэюя]/;
 				$tags_l =~ tr/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/[abcdefghijklmnopqrstuvwxyz]/;
+				
+				## добавление новости
 				$dbh->do( "INSERT INTO news VALUES ('0','" .
 					$::login . "','" .
 					$self->param('head') . "','" . 

@@ -25,11 +25,12 @@ sub done {
 	
 	connect_dbi();
 	
+	## проверка занятости логина
 	$cbh = $dbh->prepare("SELECT * FROM user_name WHERE user_name = '" . $self->param('login') . "';");
 	$cbh->execute or die;
 	my $hashref = $cbh->fetchrow_hashref();
 
-	# проверка неправильного заполнения регистрационной формы
+	## проверка неправильного заполнения регистрационной формы
 	$fail = 'неправильно введена капча' if $self->param('s_capcha') != $capcha;
 	$fail = 'логин уже занят' if $self->param('login') eq $hashref->{'user_name'};
 	$fail = 'неправильная каптча' if $self->param('s_capcha') != $capcha;
@@ -46,6 +47,7 @@ sub done {
 	
 		else  	 {	$::login = $self->param('login');
 				
+				## сохранение данных пользователя
 				$dbh->do("INSERT INTO user_name VALUES ('0','" .
 					$self->param('login') . "','" .
 					md5_str( $self->param('password1')) . "','" . 
