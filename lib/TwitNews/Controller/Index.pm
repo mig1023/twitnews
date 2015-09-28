@@ -155,7 +155,9 @@ sub comm {
 	
 	$sbh->finish();
 	$dbh->disconnect();
-	$self->render( login => $::login, newst => $news, commt => $comm );
+	$self->render(  login => $::login,
+			newst => $news,
+			commt => $comm );
 	}
 
 ## добавление нового комментария
@@ -207,9 +209,9 @@ sub timeformat {
 sub get_stat { 
 	my $hashref;
 	my $number;
-my $a = 'SELECT COUNT(1) as num FROM ' . shift .';';
-	$cbh = $dbh->prepare($a);
-	$cbh->execute or die $a;
+	
+	$cbh = $dbh->prepare('SELECT COUNT(1) as num FROM ' . shift .';');
+	$cbh->execute or die;
 	$hashref = $cbh->fetchrow_hashref();
 	$number = $hashref->{'num'};
 	$number;
