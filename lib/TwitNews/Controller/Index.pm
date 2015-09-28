@@ -21,8 +21,13 @@ sub index {
 	my $commref;
 	my %tags = ();
 	my $tags = '';
-	
+
 	connect_dbi();
+
+	## получение статистики	
+	my $news_num = get_stat('news');
+	my $user_num = get_stat('user_name');
+	my $comm_num = get_stat('comment');
 	
 	## сортировка и вывод тегов
 	$cbh = $dbh->prepare("SELECT * FROM news;");
@@ -79,7 +84,10 @@ sub index {
 			newst => $news,
 			tagst => $tags,
 			tagse => $tag_search,
-			num_p => $page_num );
+			num_p => $page_num,
+			newsn => $news_num,
+			usern => $user_num,
+			commn => $comm_num );
 	}
 
 ## залогинивание
@@ -193,6 +201,18 @@ sub timeformat {
 	$year += 1900;
 	my $str = $mday . '.' . $mon . '.' . $year . ' ' . $hour . ':' . $min;
 	$str;
+	}
+
+## получение статистики
+sub get_stat { 
+	my $hashref;
+	my $number;
+my $a = 'SELECT COUNT(1) as num FROM ' . shift .';';
+	$cbh = $dbh->prepare($a);
+	$cbh->execute or die $a;
+	$hashref = $cbh->fetchrow_hashref();
+	$number = $hashref->{'num'};
+	$number;
 	}
 
 ## подключение к БД
