@@ -41,8 +41,10 @@ sub index {
 			};
 		};
 	
-	for ((sort {$tags{$b} <=> $tags{$a} } keys %tags))
+	for (sort {$tags{$b} <=> $tags{$a} } keys %tags)
 		{ $tags .= '<a href="tag/' . $_ . '">' . $_ . '</a>, ' if defined($tags{$_}) };
+	
+	$tags =~ s/,\s$//;
 	
 	## вывод новостей: всех или по тегу
 	if ( $tag_search eq '' )

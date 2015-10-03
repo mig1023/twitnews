@@ -15,10 +15,10 @@
 	не нужно.<br><br>
 	<form style = "display: inline;" action="/login" method = "post">
 		ваш логин<br>
-		<input type = "text" size = "32" name = "login">
+		<input type = "text" size = "36" name = "login">
 		<br><br>
 		ваш пароль<br></font>
-		<input type = "password" size = "32" name = "pass">
+		<input type = "password" size = "36" name = "pass">
 		<br><br>
 		<input type = "image" name = "login" src = "pic/btn_enter2.png"
 			onmouseout="this.src='pic/btn_enter2.png'"
@@ -34,7 +34,9 @@
 
 <br><br>
 <font class = stand_fond>наиболее популярные теги:<br>
+<table width = 250><tr><td>
 <%== $tagst %>
+</td></tr></table>
 
 % if ($tagse ne '') {
 <br><br>отбор по тегу:
