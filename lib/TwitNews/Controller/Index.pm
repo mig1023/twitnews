@@ -21,7 +21,7 @@ sub index {
 	my $commref;
 	my %tags = ();
 	my $tags = '';
-
+	
 	connect_dbi();
 
 	## получение статистики	
@@ -30,7 +30,7 @@ sub index {
 	my $comm_num = get_stat('comment');
 	
 	## сортировка и вывод тегов
-	$cbh = $dbh->prepare("SELECT * FROM news;");
+	$cbh = $dbh->prepare("SELECT tags FROM news;");
 	$cbh->execute or die;
 	while($tagsref = $cbh->fetchrow_hashref()) {
 		my @tags =  split /,/, $tagsref->{'tags'};
@@ -42,25 +42,19 @@ sub index {
 		};
 	
 	for (sort {$tags{$b} <=> $tags{$a} } keys %tags)
-		{ $tags .= '<a href="tag/' . $_ . '">' . $_ . '</a>, ' if defined($tags{$_}) };
+		{ $tags .= '<a href="/tag/' . $_ . '">' . $_ . '</a>, ' if defined($tags{$_}) };
 	
 	$tags =~ s/,\s$//;
 	
 	## вывод новостей: всех или по тегу
-	if ( $tag_search eq '' )
-		{ $sbh = $dbh->prepare("SELECT * FROM news order by data desc;"); }
-	else	{ $sbh = $dbh->prepare("SELECT * FROM news WHERE tags like '" . $tag_search . "'order by data desc;"); }
+	my $tag_search_req = '';
+	$tag_search_req = "WHERE tags like '" . $tag_search . "' " if $tag_search ne '';
 	
+	$sbh = $dbh->prepare("SELECT * FROM news " . $tag_search_req . " order by data desc LIMIT " . ($page_num*10) . ",10;");
 	$sbh->execute or die;
 	
-	## пропуск просмотренных
-	if ($page_num > 0) {
-		$hashref = $sbh->fetchrow_hashref() for ( 1 .. ($page_num*10) ) };
-	
-	my $counter = 0;
-	
-	## вывод по 10 новостей
-	while (($hashref = $sbh->fetchrow_hashref()) && ($counter < 10)) {
+	## вывод
+	while ($hashref = $sbh->fetchrow_hashref()) {
 		my $comm_num = 0;
 	
 		$cbh = $dbh->prepare("SELECT * FROM comment WHERE news_num = " . $hashref->{'num'} . ";");
@@ -71,13 +65,11 @@ sub index {
 			'</font><br><font class = news_font>' .	decode('utf8', $hashref->{'news'}) . 
 			'</font><br><font class = sub_font>' .	decode('utf8', $hashref->{'user_name'}) .
 			' | ' .					timeformat($hashref->{'data'}) .
-			' | <a href="news/' . 			$hashref->{'num'} .
+			' | <a href="/news/' . 			$hashref->{'num'} .
 			'/">' . 				$comm_num .
 			' коммент.</a> | <a href="' . 		decode('utf8', $hashref->{'link'}) .
 			'">' .					decode('utf8', $hashref->{'link'}) .
 			'</a></font>' . '<br>'x3;
-			
-		$counter++;
 		}
 	
 	$sbh->finish();
