@@ -41,9 +41,7 @@ sub index {
 			};
 		};
 	
-	for (sort {$tags{$b} <=> $tags{$a} } keys %tags)
-		{ $tags .= '<a href="/tag/' . $_ . '">' . $_ . '</a>, ' if defined($tags{$_}) };
-	
+	$tags = join ', ', map {'<a href="/tag/' . $_ . '">' . $_ . '</a>'} sort {$tags{$b} <=> $tags{$a} } keys %tags;
 	$tags =~ s/,\s$//;
 	
 	## вывод новостей: всех или по тегу
