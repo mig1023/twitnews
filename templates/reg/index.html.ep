@@ -26,10 +26,15 @@ Twitter News - совместный новостной блог, в которо
 	ваш e-mail для связи<br>
 	<input type = "text" size = "22" name = "email">
 	<br><br>
-	<img src="capcha/A.jpg"> <img src="capcha/B.jpg"> <img src="capcha/C.jpg"><br>
-	<img src="capcha/D.jpg"> <img src="capcha/E.jpg"> <img src="capcha/F.jpg"><br><br>
+	<img src="capcha/<%= $capch_code %>/A.jpg"> 
+	<img src="capcha/<%= $capch_code %>/B.jpg"> 
+	<img src="capcha/<%= $capch_code %>/C.jpg"><br>
+	<img src="capcha/<%= $capch_code %>/D.jpg"> 
+	<img src="capcha/<%= $capch_code %>/E.jpg"> 
+	<img src="capcha/<%= $capch_code %>/F.jpg"><br><br>
 	количество птичек на картинках (0-6)<br>
 	<input type = "text" size = "22" name = "s_capcha">
+	<input type = "hidden" name = "p_capcha" value = "<%= $capch_code %>"
 	<br><br>
 	<input type = "submit" value = "зарегистрироваться!"><br><br>
 	<a href = "/">вернуться назад</a>

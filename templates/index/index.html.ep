@@ -20,13 +20,13 @@
 		ваш пароль<br></font>
 		<input type = "password" size = "36" name = "pass">
 		<br><br>
-		<input type = "image" name = "login" src = "pic/btn_enter2.png"
-			onmouseout="this.src='pic/btn_enter2.png'"
-			onmouseover="this.src='pic/btn_enter.png'"></form>
+		<input type = "image" name = "login" src = "/pic/btn_enter2.png"
+			onmouseout="this.src='/pic/btn_enter2.png'"
+			onmouseover="this.src='/pic/btn_enter.png'"></form>
 	<form  style = "display: inline;" action="/reg" method = "post">
-		<input type = "image" name = "logout" src = "pic/btn_reg2.png"
-			onmouseout="this.src='pic/btn_reg2.png'"
-			onmouseover="this.src='pic/btn_reg.png'"></form></form>
+		<input type = "image" name = "logout" src = "/pic/btn_reg2.png"
+			onmouseout="this.src='/pic/btn_reg2.png'"
+			onmouseover="this.src='/pic/btn_reg.png'"></form></form>
 % } else {
 	<font class = stand_fond><a href="/logout">выйти</a><br>
 	<a href='/add'>добавить новость</a></font>
