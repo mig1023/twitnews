@@ -5,8 +5,6 @@ use DBI;
 use Encode qw(decode encode);
 
 my $dbh;
-my $sbh;
-my $cbh;
 my $tag_search = '';
 my $comment_id = 0;
 
@@ -16,8 +14,6 @@ sub index {
 	my $page_num = $self->stash('page');
 	
 	my $news = '';
-	my $hashref;
-	my $tagsref;
 	my $commref;
 	my %tags = ();
 	my $tags = '';
@@ -27,12 +23,11 @@ sub index {
 	## получение статистики	
 	my $news_num = get_stat('news');
 	my $user_num = get_stat('user_name');
-	my $comm_num = get_stat('comment');
+	my $comm_num = get_stat('comment').$::login;
 	
 	## сортировка и вывод тегов
-	$cbh = $dbh->prepare("SELECT tags FROM news;");
-	$cbh->execute or die;
-	while($tagsref = $cbh->fetchrow_hashref()) {
+	my $tagsrefs = $dbh->selectall_arrayref("SELECT tags FROM news", {Slice => {}});
+	for my $tagsref (@$tagsrefs) {
 		my @tags =  split /,/, $tagsref->{'tags'};
 		for (@tags) {
 			$_ = decode('utf8',$_);
@@ -48,16 +43,14 @@ sub index {
 	my $tag_search_req = '';
 	$tag_search_req = "WHERE tags like '" . $tag_search . "' " if $tag_search ne '';
 	
-	$sbh = $dbh->prepare("SELECT * FROM news " . $tag_search_req . " order by data desc LIMIT " . ($page_num*10) . ",10;");
-	$sbh->execute or die;
-	
+	my $hashrefs = $dbh->selectall_arrayref("SELECT * FROM news " . $tag_search_req . " order by data desc LIMIT ?,10", {Slice => {}}, $page_num*10);
+
 	## вывод
-	while ($hashref = $sbh->fetchrow_hashref()) {
+	for my $hashref (@$hashrefs) {
 		my $comm_num = 0;
 	
-		$cbh = $dbh->prepare("SELECT * FROM comment WHERE news_num = " . $hashref->{'num'} . ";");
-		$cbh->execute or die;
-		$comm_num++ while $commref = $cbh->fetchrow_hashref();
+		my $commrefs = $dbh->selectrow_hashref("SELECT count(num) AS col FROM comment WHERE news_num = ?", {}, $hashref->{'num'});
+		$comm_num = $commrefs->{col};
 
 		$news .='<font class = head_font>' .		decode('utf8', $hashref->{'head'}) . 
 			'</font><br><font class = news_font>' .	decode('utf8', $hashref->{'news'}) . 
@@ -70,7 +63,6 @@ sub index {
 			'</a></font>' . '<br>'x3;
 		}
 	
-	$sbh->finish();
 	$dbh->disconnect();
 	$self->render(  login => $::login,
 			newst => $news,
@@ -89,10 +81,7 @@ sub login {
 	connect_dbi();
 	
 	## получение данных по логину
-	$sbh = $dbh->prepare("SELECT * FROM user_name WHERE user_name = '" . $self->param('login') . "';");
-	$sbh->execute or die;
-	my $hashref = $sbh->fetchrow_hashref();
-	$sbh->finish();
+	my $hashref = $dbh->selectrow_hashref("SELECT * FROM user_name WHERE user_name = ?", {}, $self->param('login'));
 	$dbh->disconnect();
 	
 	## проверка пароля
@@ -123,10 +112,7 @@ sub comm {
 	connect_dbi();
 	
 	## сама новость
-	$sbh = $dbh->prepare("SELECT * FROM news WHERE num = " . $comment_id . ";");
-	$sbh->execute or die;
-	
-	my $hashref = $sbh->fetchrow_hashref();
+	my $hashref = $dbh->selectrow_hashref("SELECT * FROM news WHERE num = ?", {}, $comment_id);
 	
 	$news .= '<font class = head_font>' .		decode('utf8', $hashref->{'head'}) . 
 		'</font><br><font class = news_font>' .	decode('utf8', $hashref->{'news'}) . 
@@ -137,15 +123,13 @@ sub comm {
 		'</a></font>' . '<br>'x3;
 	
 	## комментарии 
-	$cbh = $dbh->prepare("SELECT * FROM comment WHERE news_num = " . $comment_id . " order by data;");
-	$cbh->execute or die "\nerror query!";
-	while($commref = $cbh->fetchrow_hashref()) { 
+	my $commrefs = $dbh->selectall_arrayref("SELECT user_name, data, comment FROM comment WHERE news_num = ? order by data", {Slice => {}}, $comment_id);
+	for my $commref (@$commrefs) { 
 		$comm .= '<font class = news_font>' .	decode('utf8', $commref->{'comment'}) . 
 		'</font><br><font class = sub_font>' . 	decode('utf8', $commref->{'user_name'}) . 
 		' | ' .					timeformat($commref->{'data'}) .
 		'</font>' . '<br>'x2; };
 	
-	$sbh->finish();
 	$dbh->disconnect();
 	$self->render(  login => $::login,
 			newst => $news,
@@ -158,12 +142,8 @@ sub newcomm {
 	
 	connect_dbi();
 	
-	$dbh->do("INSERT INTO comment VALUES ('0','" .
-		$comment_id . "','" .
-		$::login . "','" . 
-		$self->param('textcomm') . "','" . 
-		time . "')" );
-
+	$dbh->do("INSERT INTO comment (news_num, user_name, comment, data) VALUES (?,?,?,?)", {},
+			$comment_id, $::login, $self->param('textcomm'), time);
 	$dbh->disconnect();
 	
 	$self->render(t_xt => 'комментарий сохранён!', l_nk => '/');
@@ -199,13 +179,8 @@ sub timeformat {
 
 ## получение статистики
 sub get_stat { 
-	my $hashref;
-	my $number;
-	
-	$cbh = $dbh->prepare('SELECT COUNT(1) as num FROM ' . shift .';');
-	$cbh->execute or die;
-	$hashref = $cbh->fetchrow_hashref();
-	$number = $hashref->{'num'};
+	my $hashref = $dbh->selectrow_hashref("SELECT COUNT(1) as num FROM ".shift);
+	my $number = $hashref->{'num'};
 	$number;
 	}
 

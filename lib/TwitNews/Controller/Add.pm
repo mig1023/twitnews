@@ -21,7 +21,7 @@ sub done {
 	$fail = 'слишком длинная новость' if length($self->param('textnews')) > 1000;
 	$fail = 'неправильная ссылка на первоисточник'
 		if !($self->param('proof') =~ /^(https?:\/\/)([\w\.]+)\.([a-z]{2,6}\.?)(\/[\w\.]*)*\/?$/);
-	$fail = 'только зарегистрированные пользователи могут размещать новости' if $::login == 0;;
+	$fail = 'только зарегистрированные пользователи могут размещать новости' if ($::login eq '0');
 	
 	if ($fail ne '') { 	$self->render(t_xt => "ошибка: $fail!", l_nk => '/add' ); }
 	
@@ -33,13 +33,9 @@ sub done {
 				$tags_l =~ tr/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/[abcdefghijklmnopqrstuvwxyz]/;
 				
 				## добавление новости
-				$dbh->do( "INSERT INTO news VALUES ('0','" .
-					$::login . "','" .
-					$self->param('head') . "','" . 
-					$self->param('textnews') . "','" . 
-					$self->param('proof') . "','" .
-					$tags_l . "','" .
-					time . "')" );
+				$dbh->do( "INSERT INTO news (user_name, head, comment, link, tags, data) VALUES (?,?,?,?,?,?)", {},
+					$::login, $self->param('head'),	$self->param('textnews'),
+					$self->param('proof'), $tags_l, time );
 				
 				$dbh->disconnect();
 				

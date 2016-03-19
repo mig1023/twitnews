@@ -27,9 +27,7 @@ sub done {
 	connect_dbi();
 	
 	## проверка занятости логина
-	$cbh = $dbh->prepare("SELECT * FROM user_name WHERE user_name = '" . $self->param('login') . "';");
-	$cbh->execute or die;
-	my $hashref = $cbh->fetchrow_hashref();
+	my $hashref = $dbh->selectrow_hashref("SELECT * FROM user_name WHERE user_name = ?", {}, $self->param('login'));
 
 	## в любом случае удаляем картинки капчи
 	if (length($self->param('p_capcha')) == 16) {
@@ -55,10 +53,9 @@ sub done {
 		else  	 {	$::login = $self->param('login');
 				
 				## сохранение данных пользователя
-				$dbh->do("INSERT INTO user_name VALUES ('0','" .
-					$self->param('login') . "','" .
-					md5_str( $self->param('password1')) . "','" . 
-					$self->param('email') . "')" );
+				$dbh->do("INSERT INTO user_name(user_name, password, email) VALUES (?,?,?)", {},
+						$self->param('login'), md5_str( $self->param('password1')), 
+						$self->param('email'));
 				
 				$dbh->disconnect();
 				
