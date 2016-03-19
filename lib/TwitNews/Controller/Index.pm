@@ -43,7 +43,7 @@ sub index {
 	my $tag_search_req = '';
 	$tag_search_req = "WHERE tags like '" . $tag_search . "' " if $tag_search ne '';
 	
-	my $hashrefs = $dbh->selectall_arrayref("SELECT * FROM news " . $tag_search_req . " order by data desc LIMIT ?,10", {Slice => {}}, $page_num*10);
+	my $hashrefs = $dbh->selectall_arrayref("SELECT * FROM news " . $tag_search_req . " order by num desc LIMIT ?,10", {Slice => {}}, $page_num*10);
 
 	## вывод
 	for my $hashref (@$hashrefs) {

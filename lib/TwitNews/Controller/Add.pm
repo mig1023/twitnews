@@ -33,7 +33,7 @@ sub done {
 				$tags_l =~ tr/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/[abcdefghijklmnopqrstuvwxyz]/;
 				
 				## добавление новости
-				$dbh->do( "INSERT INTO news (user_name, head, comment, link, tags, data) VALUES (?,?,?,?,?,?)", {},
+				$dbh->do( "INSERT INTO news (user_name, head, news, link, tags, data) VALUES (?,?,?,?,?,?)", {},
 					$::login, $self->param('head'),	$self->param('textnews'),
 					$self->param('proof'), $tags_l, time );
 				
